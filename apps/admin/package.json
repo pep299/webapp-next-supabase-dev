@@ -1,0 +1,44 @@
+{
+  "name": "admin",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev -p 3001",
+    "build": "next build",
+    "start": "next start -p 3001",
+    "lint": "next lint",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest"
+  },
+  "dependencies": {
+    "next": "15.3.5",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "@mantine/core": "^7.13.0",
+    "@mantine/hooks": "^7.13.0",
+    "@mantine/form": "^7.13.0",
+    "@mantine/notifications": "^7.13.0",
+    "@mantine/dates": "^7.13.0",
+    "@mantine/dropzone": "^7.13.0",
+    "@tabler/icons-react": "^3.0.0",
+    "dayjs": "^1.11.10",
+    "@supabase/supabase-js": "^2.45.1",
+    "@sentry/nextjs": "^8.0.0",
+    "db": "workspace:*",
+    "core": "workspace:*",
+    "ui": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.5",
+    "@types/node": "^20.14.0",
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "eslint": "^9.18.0",
+    "eslint-config-next": "15.3.5",
+    "tailwindcss": "^3.4.0",
+    "autoprefixer": "^10.4.19",
+    "postcss": "^8.4.38",
+    "vitest": "^3.2.4",
+    "@vitejs/plugin-react": "^4.3.0"
+  }
+}

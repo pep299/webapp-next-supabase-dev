@@ -1,0 +1,50 @@
+{
+  "name": "webapp-next-supabase-dev",
+  "private": true,
+  "scripts": {
+    "dev": "turbo dev",
+    "dev:claude": "CLAUDE_CODE=true nohup ./scripts/pnpm-wrapper.sh turbo dev > turbo.log 2>&1 &",
+    "dev:claude:pnpm": "nohup mise exec -- pnpm turbo dev > turbo.log 2>&1 &",
+    "build": "turbo build",
+    "test": "turbo test",
+    "test:ui": "vitest --ui",
+    "test:coverage": "vitest --coverage",
+    "lint": "turbo lint",
+    "lint:biome": "biome check .",
+    "lint:eslint": "eslint . --ext .ts,.tsx,.js,.jsx",
+    "format": "turbo format",
+    "format:biome": "biome format --write .",
+    "typecheck": "turbo typecheck",
+    "clean": "turbo clean",
+    "check": "turbo typecheck && turbo lint && turbo test && turbo build",
+    "ci:install": "pnpm install --frozen-lockfile",
+    "health-check": "node scripts/health-check.js",
+    "dev:stop": "pkill -f 'turbo dev' && pkill -f 'next dev'",
+    "pnpm": "./scripts/pnpm-wrapper.sh",
+    "db:generate": "turbo db:generate",
+    "db:push": "turbo db:push",
+    "db:studio": "turbo db:studio"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^1.9.0",
+    "@typescript-eslint/eslint-plugin": "^8.18.0",
+    "@typescript-eslint/parser": "^8.18.0",
+    "@eslint/js": "^9.18.0",
+    "eslint": "^9.18.0",
+    "typescript": "^5.6.3",
+    "vitest": "^3.2.4",
+    "@vitest/coverage-v8": "^3.2.4",
+    "@testing-library/react": "^16.0.0",
+    "@testing-library/jest-dom": "^6.4.0",
+    "jsdom": "^25.0.0",
+    "textlint": "^15.2.0",
+    "textlint-rule-preset-ai-writing": "^1.1.0",
+    "textlint-rule-preset-ja-technical-writing": "^12.0.2",
+    "turbo": "^2.0.0"
+  },
+  "packageManager": "pnpm@10.12.4",
+  "engines": {
+    "node": ">=18.0.0",
+    "pnpm": ">=9.0.0"
+  }
+}
