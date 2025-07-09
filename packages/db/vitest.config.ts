@@ -1,11 +1,11 @@
+import { resolve } from "node:path";
 import { defineConfig } from "vitest/config";
-import { resolve } from "path";
 
 export default defineConfig({
   test: {
     globals: true,
     environment: "node",
-    setupFiles: ["../../vitest.setup.ts"],
+    // Note: setupFiles removed as this package doesn't need React setup
   },
   resolve: {
     alias: {

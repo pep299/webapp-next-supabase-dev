@@ -2,13 +2,17 @@
   "name": "core",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "main": "./src/index.ts",
   "types": "./src/index.ts",
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch",
     "typecheck": "tsc --noEmit",
-    "test": "vitest"
+    "test": "vitest",
+    "lint": "biome check . && eslint . --ext .ts,.tsx,.js,.jsx",
+    "lint:fix": "biome check --write . && eslint . --ext .ts,.tsx,.js,.jsx --fix",
+    "format": "biome format --write ."
   },
   "dependencies": {
     "db": "workspace:*",

@@ -1,5 +1,5 @@
 {
-  "$schema": "https://biomejs.dev/schemas/1.9.0/schema.json",
+  "$schema": "https://biomejs.dev/schemas/2.1.1/schema.json",
   "vcs": {
     "enabled": true,
     "clientKind": "git",
@@ -7,7 +7,14 @@
   },
   "files": {
     "ignoreUnknown": false,
-    "ignore": ["node_modules", "dist", ".next", "out", "build"]
+    "includes": [
+      "**",
+      "!**/node_modules",
+      "!**/dist",
+      "!**/.next",
+      "!**/out",
+      "!**/build"
+    ]
   },
   "formatter": {
     "enabled": true,
@@ -18,24 +25,66 @@
     "lineWidth": 80,
     "attributePosition": "auto"
   },
-  "organizeImports": {
-    "enabled": true
-  },
+  "assist": { "actions": { "source": { "organizeImports": "on" } } },
   "linter": {
     "enabled": true,
     "rules": {
       "recommended": true,
       "correctness": {
         "noUnusedVariables": "error",
-        "useExhaustiveDependencies": "warn"
+        "noUnusedImports": "error",
+        "useExhaustiveDependencies": "warn",
+        "useHookAtTopLevel": "error",
+        "noUndeclaredVariables": "error",
+        "noUnreachable": "error",
+        "noConstAssign": "error"
       },
       "style": {
         "noNonNullAssertion": "warn",
-        "useImportType": "error"
+        "useImportType": "error",
+        "useConst": "error",
+        "useTemplate": "error",
+        "useAsConstAssertion": "error",
+        "noUselessElse": "error",
+        "useBlockStatements": "error",
+        "useConsistentArrayType": {
+          "level": "error",
+          "options": { "syntax": "shorthand" }
+        }
       },
       "suspicious": {
         "noExplicitAny": "warn",
-        "noArrayIndexKey": "warn"
+        "noArrayIndexKey": "warn",
+        "noEmptyBlockStatements": "error",
+        "noFallthroughSwitchClause": "error",
+        "noGlobalIsFinite": "error",
+        "noGlobalIsNan": "error",
+        "noDebugger": "error",
+        "noDuplicateCase": "error",
+        "noDuplicateJsxProps": "error",
+        "noRedundantUseStrict": "error",
+        "noVar": "error",
+        "noConsole": { "level": "warn", "options": { "allow": ["log"] } }
+      },
+      "complexity": {
+        "noBannedTypes": "error",
+        "noForEach": "warn",
+        "noStaticOnlyClass": "error",
+        "noUselessConstructor": "error",
+        "useArrowFunction": "error",
+        "useFlatMap": "error",
+        "useOptionalChain": "error",
+        "useSimplifiedLogicExpression": "error"
+      },
+      "performance": {
+        "noDelete": "error",
+        "noReExportAll": "off"
+      },
+      "security": {
+        "noDangerouslySetInnerHtml": "error"
+      },
+      "nursery": {
+        "useSortedClasses": "error"
       }
     }
   },

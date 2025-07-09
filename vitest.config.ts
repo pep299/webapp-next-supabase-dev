@@ -1,6 +1,8 @@
+import { resolve } from "node:path";
 import { defineConfig } from "vitest/config";
-import { resolve } from "path";
 
+// NOTE: "type": "module" added to all package.json files to resolve 
+// "The CJS build of Vite's Node API is deprecated" warning
 export default defineConfig({
   test: {
     globals: true,
@@ -24,9 +26,9 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": resolve(__dirname, "./src"),
-      "db": resolve(__dirname, "./packages/db/src"),
-      "core": resolve(__dirname, "./packages/core/src"),
-      "ui": resolve(__dirname, "./packages/ui/src"),
+      db: resolve(__dirname, "./packages/db/src"),
+      core: resolve(__dirname, "./packages/core/src"),
+      ui: resolve(__dirname, "./packages/ui/src"),
     },
   },
 });

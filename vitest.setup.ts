@@ -1,6 +1,31 @@
-import { beforeAll, afterEach, afterAll, vi } from "vitest";
 import { cleanup } from "@testing-library/react";
+import { afterEach, beforeAll, vi } from "vitest";
 import "@testing-library/jest-dom";
+import React from "react";
+
+// @ts-ignore
+globalThis.React = React;
+
+// NOTE: This setup file requires React to be available in the root workspace dependencies
+// Core/DB packages that don't use React should not include this setupFile in their vitest.config
+// to avoid unnecessary React dependency errors
+
+// Mock window.matchMedia for Mantine (only in jsdom environment)
+if (typeof window !== "undefined") {
+  Object.defineProperty(window, "matchMedia", {
+    writable: true,
+    value: vi.fn().mockImplementation((query) => ({
+      matches: false,
+      media: query,
+      onchange: null,
+      addListener: vi.fn(),
+      removeListener: vi.fn(),
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+      dispatchEvent: vi.fn(),
+    })),
+  });
+}
 
 // React Testing Library cleanup
 afterEach(() => {

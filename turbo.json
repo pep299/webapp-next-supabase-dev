@@ -4,7 +4,7 @@
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
-      "outputs": [".next/**", "!.next/cache/**", "dist/**"]
+      "outputs": [".next/**", "!.next/cache/**", "dist/**", "lib/**", "*.tsbuildinfo"]
     },
     "dev": {
       "cache": false,
@@ -12,7 +12,7 @@
     },
     "test": {
       "dependsOn": ["^build"],
-      "outputs": ["coverage/**"]
+      "outputs": ["coverage/**", "test-results/**"]
     },
     "lint": {
       "dependsOn": ["^build"],
