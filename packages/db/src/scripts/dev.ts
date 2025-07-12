@@ -18,12 +18,11 @@ const commands = {
     if (dbResult && supabaseResult) {
       console.log("\n🎉 All connections successful!");
       return 0;
-    } else {
-      console.log(
-        "\n❌ Some connections failed. Please check your configuration."
-      );
-      return 1;
     }
+    console.log(
+      "\n❌ Some connections failed. Please check your configuration."
+    );
+    return 1;
   },
 
   // Show database statistics
@@ -120,7 +119,7 @@ const commands = {
 async function main() {
   const command = process.argv[2] as keyof typeof commands;
 
-  if (!command || !commands[command]) {
+  if (!command || !(command in commands)) {
     console.error("❌ Invalid or missing command\n");
     await commands.help();
     process.exit(1);
@@ -137,5 +136,5 @@ async function main() {
 
 // Run if called directly
 if (import.meta.url === `file://${process.argv[1]}`) {
-  main();
+  void main();
 }

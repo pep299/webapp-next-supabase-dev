@@ -43,9 +43,6 @@
     "dist",
     "build",
     "out",
-    "**/__tests__/**",
-    "**/*.test.ts",
-    "**/*.test.tsx",
     "vitest.setup.ts"
   ]
 }

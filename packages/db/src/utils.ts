@@ -1,7 +1,7 @@
 // Database utility functions for development and testing
 import { eq } from "drizzle-orm";
 import { db } from "./client";
-import { users, posts, type NewUser, type NewPost } from "./schema";
+import { type NewPost, type NewUser, posts, users } from "./schema";
 
 // User utilities
 export const userUtils = {
@@ -121,7 +121,9 @@ export const postUtils = {
     const post = await db.query.posts.findFirst({
       where: eq(posts.id, id),
     });
-    if (!post) return null;
+    if (!post) {
+      return null;
+    }
 
     const [updatedPost] = await db
       .update(posts)

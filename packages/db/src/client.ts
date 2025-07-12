@@ -1,9 +1,10 @@
 // Database client configuration
+
+import { resolve } from "node:path";
 import { createClient } from "@supabase/supabase-js";
+import { config } from "dotenv";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
-import { config } from "dotenv";
-import { resolve } from "path";
 import * as schema from "./schema";
 
 // Load environment variables (for development scripts)
@@ -45,7 +46,7 @@ export async function testDatabaseConnection(): Promise<boolean> {
 // Supabase connection test function
 export async function testSupabaseConnection(): Promise<boolean> {
   try {
-    const { data, error } = await supabase.auth.getSession();
+    const { error } = await supabase.auth.getSession();
     if (error) {
       console.log("⚠️ Supabase auth not configured, but connection works");
     } else {

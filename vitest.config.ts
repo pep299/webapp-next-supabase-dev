@@ -1,7 +1,7 @@
 import { resolve } from "node:path";
 import { defineConfig } from "vitest/config";
 
-// NOTE: "type": "module" added to all package.json files to resolve 
+// NOTE: "type": "module" added to all package.json files to resolve
 // "The CJS build of Vite's Node API is deprecated" warning
 export default defineConfig({
   test: {

@@ -1,18 +1,21 @@
 // Test helpers for database operations
-import { beforeEach, afterEach } from "vitest";
 import { db } from "./client";
-import { users, posts } from "./schema";
-import { devUtils, seedData } from "./utils";
+import { posts, users } from "./schema";
+import { devUtils } from "./utils";
 
 // Test database setup and teardown
 export function setupTestDb() {
-  beforeEach(async () => {
+  // Note: beforeEach and afterEach should be imported in actual test files
+  // This helper provides the async functions to be used with vitest hooks
+  const setupHook = async () => {
     await devUtils.clearAllData();
-  });
+  };
 
-  afterEach(async () => {
+  const teardownHook = async () => {
     await devUtils.clearAllData();
-  });
+  };
+
+  return { setupHook, teardownHook };
 }
 
 // Factory functions for test data

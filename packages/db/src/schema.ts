@@ -1,4 +1,6 @@
 // Database schema definitions using Drizzle ORM
+
+import { relations } from "drizzle-orm";
 import {
   boolean,
   index,
@@ -9,7 +11,6 @@ import {
   timestamp,
   varchar,
 } from "drizzle-orm/pg-core";
-import { relations } from "drizzle-orm";
 
 // Users table
 export const users = pgTable(

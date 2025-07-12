@@ -3,7 +3,7 @@ import { afterEach, beforeAll, vi } from "vitest";
 import "@testing-library/jest-dom";
 import React from "react";
 
-// @ts-ignore
+// @ts-expect-error
 globalThis.React = React;
 
 // NOTE: This setup file requires React to be available in the root workspace dependencies

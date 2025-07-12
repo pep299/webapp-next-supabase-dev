@@ -1,6 +1,6 @@
 // Common utility functions shared across the application
 
-export function formatDate(date: Date): string {
+export function formatDate(date: Readonly<Date>): string {
   return date.toISOString().split("T")[0];
 }
 
