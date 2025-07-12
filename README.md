@@ -83,19 +83,17 @@ pnpm --filter web dev      # Web (localhost:3000)
 pnpm --filter admin dev    # Admin (localhost:3001)
 ```
 
-## 利用可能なスクリプト
+## タスクランナーの使い分け
 
-### 全体操作
+**Turbo管理（各アプリで実装されているタスク）**
+- モノレポ全体で並列実行・キャッシュが効く
+- 例: `dev`, `build`, `test`, `lint`, `typecheck`
 
-```bash
-pnpm dev          # 開発サーバー起動
-pnpm build        # 全てのアプリケーションをビルド
-pnpm test         # テスト実行
-pnpm lint         # リント実行
-pnpm format       # フォーマット実行
-pnpm typecheck    # 型チェック
-pnpm clean        # ビルドファイルの削除
-```
+**直接実行（ルートレベル専用・外部CLI・制御系）**
+- ルート専用の処理や外部CLIの直接実行
+- 例: `lint:biome`, `supabase:*`, `dev:stop`
+
+利用可能なスクリプトは `package.json` を参照してください。
 
 ### データベース操作
 
