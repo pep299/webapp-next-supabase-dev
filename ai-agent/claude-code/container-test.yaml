@@ -1,0 +1,127 @@
+schemaVersion: '2.0.0'
+
+# コマンド実行テスト
+commandTests:
+  # ツールが使えるかテスト
+  - name: 'node version check'
+    command: 'node'
+    args: ['--version']
+    expectedOutput: ['v2[0-9]\..*']
+    
+  - name: 'pnpm available'
+    command: 'pnpm'
+    args: ['--version']
+    
+  - name: 'git available'
+    command: 'git'
+    args: ['--version']
+    
+  - name: 'curl available'
+    command: 'curl'
+    args: ['--version']
+    
+  - name: 'jq available'
+    command: 'jq'
+    args: ['--version']
+    
+  - name: 'make available'
+    command: 'make'
+    args: ['--version']
+    
+  # Git設定ができているかテスト
+  - name: 'git config quotepath check'
+    command: 'git'
+    args: ['config', '--global', '--get', 'core.quotepath']
+    expectedOutput: ['false']
+    
+  # Claude Codeが立ち上がるかテスト
+  - name: 'claude command available'
+    command: 'claude'
+    args: ['--help']
+    
+  # 文字化けしてないかテスト（ロケール確認）
+  - name: 'locale check'
+    command: 'sh'
+    args: ['-c', 'echo $LANG']
+    expectedOutput: ['C.UTF-8']
+    
+  # pnpm使えるかテスト
+  - name: 'pnpm list works'
+    command: 'pnpm'
+    args: ['list', '--depth=0']
+    workingDir: '/workspace/webapp-next-supabase-dev'
+    
+  # 日本語文字化けテスト
+  - name: 'japanese text display test'
+    command: 'sh'
+    args: ['-c', 'echo "日本語テスト" | cat']
+    expectedOutput: ['日本語テスト']
+
+# ファイル存在確認
+fileExistenceTests:
+  - name: 'package.json exists'
+    path: '/workspace/webapp-next-supabase-dev/package.json'
+    shouldExist: true
+    
+  - name: '.env exists'
+    path: '/workspace/webapp-next-supabase-dev/.env'
+    shouldExist: true
+    
+  - name: 'pnpm-lock.yaml exists'
+    path: '/workspace/webapp-next-supabase-dev/pnpm-lock.yaml'
+    shouldExist: true
+    
+  - name: 'turbo.json exists'
+    path: '/workspace/webapp-next-supabase-dev/turbo.json'
+    shouldExist: true
+    
+  - name: 'pnpm-workspace.yaml exists'
+    path: '/workspace/webapp-next-supabase-dev/pnpm-workspace.yaml'
+    shouldExist: true
+    
+  # node_modulesがあるかテスト
+  - name: 'node_modules exists'
+    path: '/workspace/webapp-next-supabase-dev/node_modules'
+    shouldExist: true
+    
+  # pnpm node_modulesがあるかテスト
+  - name: 'root node_modules/.pnpm exists'
+    path: '/workspace/webapp-next-supabase-dev/node_modules/.pnpm'
+    shouldExist: true
+
+# ファイル内容確認
+fileContentTests:
+  - name: 'package.json has correct name'
+    path: '/workspace/webapp-next-supabase-dev/package.json'
+    expectedContents: ['webapp-next-supabase-dev']
+    
+  - name: 'package.json has pnpm packageManager'
+    path: '/workspace/webapp-next-supabase-dev/package.json'
+    expectedContents: ['pnpm@']
+    
+  - name: '.env has environment variables'
+    path: '/workspace/webapp-next-supabase-dev/.env'
+    expectedContents: ['=']
+
+# メタデータテスト  
+metadataTest:
+  # 公開ポート確認
+  exposedPorts: 
+    - "3000"
+    - "3001" 
+    - "54320"
+    - "54321"
+    - "54322"
+    - "54323"
+    - "54324"
+    - "54325"
+    - "54326" 
+    - "54327"
+    - "54328"
+    - "54329"
+  
+  # デフォルトコマンド確認
+  cmd: ["/bin/zsh"]
+  
+  # 作業ディレクトリ確認
+  workdir: "/workspace/webapp-next-supabase-dev"

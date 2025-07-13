@@ -1,0 +1,32 @@
+name: Container Test
+
+on:
+  push:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Install container-structure-test
+      run: |
+        curl -LO https://storage.googleapis.com/container-structure-test/latest/container-structure-test-linux-amd64
+        chmod +x container-structure-test-linux-amd64
+        sudo mv container-structure-test-linux-amd64 /usr/local/bin/container-structure-test
+        
+    - name: Create .env file
+      run: |
+        cp .env.example .env
+        
+    - name: Build container image
+      run: |
+        cd ai-agent
+        make build-with-token GITHUB_TOKEN="${{ secrets.GITHUB_TOKEN }}"
+        
+    - name: Run container tests
+      run: |
+        cd ai-agent
+        make test
