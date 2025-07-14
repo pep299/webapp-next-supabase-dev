@@ -32,14 +32,19 @@ endif
 	echo "🔨 Building Claude Code container..."
 	docker build \
 		--build-arg GITHUB_TOKEN="$(GITHUB_TOKEN)" \
+		$(if $(GIT_USER_NAME),--build-arg GIT_USER_NAME="$(GIT_USER_NAME)") \
+		$(if $(GIT_USER_EMAIL),--build-arg GIT_USER_EMAIL="$(GIT_USER_EMAIL)") \
 		-t $(IMAGE_NAME):latest \
 		-f claude-code/Dockerfile \
 		..
 	echo "✅ Build completed: $(IMAGE_NAME):latest"
 
-# イメージビルド（自動トークン取得）
+# イメージビルド（自動トークン取得＋Git設定）
 build:
-	$(MAKE) build-with-token GITHUB_TOKEN="$(shell gh auth token 2>/dev/null || echo "")"
+	$(MAKE) build-with-token \
+		GITHUB_TOKEN="$(shell gh auth token 2>/dev/null || echo "")" \
+		GIT_USER_NAME="$(shell git config --global user.name 2>/dev/null || echo "")" \
+		GIT_USER_EMAIL="$(shell git config --global user.email 2>/dev/null || echo "")"
 
 # コンテナ実行
 run:

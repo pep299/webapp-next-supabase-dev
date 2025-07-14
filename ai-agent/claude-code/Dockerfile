@@ -1,23 +1,35 @@
 # syntax=docker/dockerfile:1
 #
 # Claude Code用開発コンテナ
-# 
-# Base image contains: Node.js 20, git, zsh, fzf, jq, curl, git-delta, 
-# GitHub CLI, and other dev tools
-# See: https://github.com/anthropics/claude-code/blob/main/.devcontainer/Dockerfile
+# Node.js 20ベースでClaude CLIを含む開発環境を構築
 
-FROM ghcr.io/anthropics/devcontainer-features/claude-code:latest
+FROM node:20
 
-# 必要なパッケージのインストール
-# Note: curl, jq, git, fzf are already included in base image
-RUN apt-get update && apt-get install -y \
-    make \
-    && rm -rf /var/lib/apt/lists/*
+ENV DEBIAN_FRONTEND=noninteractive
+ENV TZ=Asia/Tokyo
 
 # UTF-8ロケール設定（日本語git diff文字化け対策）
-# C.UTF-8は追加インストール不要で利用可能
 ENV LANG=C.UTF-8
 ENV LC_ALL=C.UTF-8
+
+# 必要なパッケージのインストール
+RUN apt-get update && apt-get install -y \
+    make \
+    vim \
+    nano \
+    jq \
+    fzf \
+    zsh \
+    ca-certificates \
+    && curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg \
+    && chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg \
+    && echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | tee /etc/apt/sources.list.d/github-cli.list > /dev/null \
+    && apt-get update \
+    && apt-get install -y gh \
+    && rm -rf /var/lib/apt/lists/*
+
+# Claude Code CLIをインストール
+RUN npm install -g @anthropic-ai/claude-code
 
 # corepackを有効化してpnpmを準備
 RUN corepack enable && \
@@ -30,6 +42,12 @@ WORKDIR /workspace/webapp-next-supabase-dev
 ARG GITHUB_TOKEN
 RUN test -n "$GITHUB_TOKEN" || (echo "ERROR: GITHUB_TOKEN is required" && exit 1)
 
+# Git設定（build arg経由、オプション）
+ARG GIT_USER_NAME
+ARG GIT_USER_EMAIL
+RUN if [ -n "$GIT_USER_NAME" ]; then git config --global user.name "$GIT_USER_NAME"; fi
+RUN if [ -n "$GIT_USER_EMAIL" ]; then git config --global user.email "$GIT_USER_EMAIL"; fi
+
 # GitHubからリポジトリをクローン
 RUN git clone https://token:$GITHUB_TOKEN@github.com/pep299/webapp-next-supabase-dev.git .
 
@@ -37,7 +55,7 @@ RUN git clone https://token:$GITHUB_TOKEN@github.com/pep299/webapp-next-supabase
 RUN pnpm install --frozen-lockfile
 
 # .envファイルをホストからコピー（動的設定対応）
-COPY .env .env
+COPY .env.local .env
 
 # ポート公開（動的検出されたポート用）
 # Next.js apps: 3000, 3001
