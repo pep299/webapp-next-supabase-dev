@@ -1,0 +1,111 @@
+schemaVersion: '2.0.0'
+
+# コマンド実行テスト
+commandTests:
+  # Dockerfileでインストールしたツールの存在確認
+  - name: 'make installed'
+    command: 'make'
+    args: ['--version']
+    expectedOutput: ['GNU Make.*']
+    
+  - name: 'vim installed'
+    command: 'vim'
+    args: ['--version']
+    expectedOutput: ['VIM.*']
+    
+  - name: 'jq installed'
+    command: 'jq'
+    args: ['--version']
+    expectedOutput: ['jq-.*']
+    
+  - name: 'fzf installed'
+    command: 'fzf'
+    args: ['--version']
+    expectedOutput: ['[0-9]+\.[0-9]+.*']
+    
+  - name: 'zsh installed'
+    command: 'zsh'
+    args: ['--version']
+    expectedOutput: ['zsh [0-9]+.*']
+    
+  - name: 'gh installed'
+    command: 'gh'
+    args: ['--version']
+    expectedOutput: ['gh version.*']
+    
+  - name: 'pnpm installed'
+    command: 'pnpm'
+    args: ['--version']
+    expectedOutput: ['[0-9]+\.[0-9]+.*']
+    
+  # Claude Code CLIが使えるかテスト
+  - name: 'claude command available'
+    command: 'claude'
+    args: ['--version']
+    expectedOutput: ['.*Claude Code.*']
+    
+  # 日本語文字化けテスト
+  - name: 'japanese text display test'
+    command: 'sh'
+    args: ['-c', 'echo "日本語テスト" | cat']
+    expectedOutput: ['日本語テスト']
+    
+  # 環境変数反映テスト（.env.local → 環境変数）
+  - name: 'env vars from .env loaded'
+    command: 'zsh'
+    args: ['-c', 'cd /workspace/webapp-next-supabase-dev && source .env && echo "ENV_LOADED:$NODE_ENV"']
+    expectedOutput: ['ENV_LOADED:.*']
+    
+  # gitの基本設定チェック
+  - name: 'git user config is set'
+    command: 'git'
+    args: ['config', '--global', '--get', 'user.name']
+    expectedOutput: ['.*']  # 何らかの名前が設定されていることを確認
+    
+  - name: 'git email config is set'
+    command: 'git'
+    args: ['config', '--global', '--get', 'user.email']
+    expectedOutput: ['.*@.*']  # メールアドレス形式で設定されていることを確認
+    
+  # セキュリティ：git認証情報が平文で保存されていないかチェック
+  - name: 'no git credentials stored'
+    command: 'sh'
+    args: ['-c', 'ls -la ~/.git-credentials 2>/dev/null || echo "NO_CREDENTIALS"']
+    expectedOutput: ['NO_CREDENTIALS']
+
+# ファイル存在確認（ビルド成果物のみ）
+fileExistenceTests:
+  - name: '.env exists'
+    path: '/workspace/webapp-next-supabase-dev/.env'
+    shouldExist: true
+    
+  - name: 'node_modules exists'
+    path: '/workspace/webapp-next-supabase-dev/node_modules'
+    shouldExist: true
+    
+  - name: 'pnpm node_modules exists'
+    path: '/workspace/webapp-next-supabase-dev/node_modules/.pnpm'
+    shouldExist: true
+
+# メタデータテスト  
+metadataTest:
+  # 公開ポート確認
+  exposedPorts: 
+    - "3000"
+    - "3001" 
+    - "54320"
+    - "54321"
+    - "54322"
+    - "54323"
+    - "54324"
+    - "54325"
+    - "54326" 
+    - "54327"
+    - "54328"
+    - "54329"
+  
+  # デフォルトコマンド確認
+  cmd: ["/bin/zsh"]
+  
+  # 作業ディレクトリ確認
+  workdir: "/workspace/webapp-next-supabase-dev"
