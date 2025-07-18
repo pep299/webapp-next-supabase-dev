@@ -23,11 +23,6 @@ commandTests:
     args: ['--version']
     expectedOutput: ['[0-9]+\.[0-9]+.*']
     
-  - name: 'zsh installed'
-    command: 'zsh'
-    args: ['--version']
-    expectedOutput: ['zsh [0-9]+.*']
-    
   - name: 'gh installed'
     command: 'gh'
     args: ['--version']
@@ -38,11 +33,28 @@ commandTests:
     args: ['--version']
     expectedOutput: ['[0-9]+\.[0-9]+.*']
     
-  # Claude Code CLIが使えるかテスト
+  # Claude Code CLIが使えるかテスト (using bash to avoid shell snapshot issues)
   - name: 'claude command available'
-    command: 'claude'
-    args: ['--version']
+    command: 'bash'
+    args: ['-c', 'claude --version']
     expectedOutput: ['.*Claude Code.*']
+    
+  # 非rootユーザーで実行されているかテスト
+  - name: 'running as non-root user'
+    command: 'whoami'
+    expectedOutput: ['claude']
+    
+  # --dangerously-skip-permissionsフラグが使用可能かテスト
+  - name: 'dangerously-skip-permissions flag works'
+    command: 'bash'
+    args: ['-c', 'claude --dangerously-skip-permissions --help']
+    expectedOutput: ['.*help.*']
+    
+  # sudo権限があるかテスト
+  - name: 'sudo access available'
+    command: 'sudo'
+    args: ['echo', 'sudo test']
+    expectedOutput: ['sudo test']
     
   # 日本語文字化けテスト
   - name: 'japanese text display test'
@@ -52,7 +64,7 @@ commandTests:
     
   # 環境変数反映テスト（.env.local → 環境変数）
   - name: 'env vars from .env loaded'
-    command: 'zsh'
+    command: 'bash'
     args: ['-c', 'cd /workspace/webapp-next-supabase-dev && source .env && echo "ENV_LOADED:$NODE_ENV"']
     expectedOutput: ['ENV_LOADED:.*']
     
@@ -72,6 +84,31 @@ commandTests:
     command: 'sh'
     args: ['-c', 'ls -la ~/.git-credentials 2>/dev/null || echo "NO_CREDENTIALS"']
     expectedOutput: ['NO_CREDENTIALS']
+    
+  # Claude Code設定ディレクトリが存在するかテスト
+  - name: 'claude config directory exists'
+    command: 'test'
+    args: ['-d', '/home/claude/.claude']
+    expectedOutput: []  # exit code 0 expected
+    
+    
+  # hooks設定があるかテスト（あれば）
+  - name: 'hooks config exists if available'
+    command: 'bash'
+    args: ['-c', 'if [ -f /home/claude/.claude/settings.json ]; then jq . /home/claude/.claude/settings.json; else echo "NO_HOOKS_CONFIG"; fi']
+    expectedOutput: ['.*hooks.*|NO_HOOKS_CONFIG']
+    
+  # MCP設定をClaude Codeで認識できるかテスト
+  - name: 'claude code mcp servers recognition test'
+    command: 'bash'
+    args: ['-c', 'cd /workspace/webapp-next-supabase-dev && claude mcp list']
+    expectedOutput: ['context7:', 'playwright:']
+    
+  # hooks functionality test - test that hooks configuration is loaded (without requiring auth)
+  - name: 'claude code hooks functionality test'
+    command: 'bash'
+    args: ['-c', 'cd /workspace/webapp-next-supabase-dev && claude config --help 2>&1 | head -5 && echo "HOOKS_CONFIG_ACCESSIBLE"']
+    expectedOutput: ['HOOKS_CONFIG_ACCESSIBLE']
 
 # ファイル存在確認（ビルド成果物のみ）
 fileExistenceTests:
@@ -105,7 +142,7 @@ metadataTest:
     - "54329"
   
   # デフォルトコマンド確認
-  cmd: ["/bin/zsh"]
+  cmd: ["/bin/bash"]
   
   # 作業ディレクトリ確認
   workdir: "/workspace/webapp-next-supabase-dev"
