@@ -5,66 +5,75 @@
 
 FROM node:20
 
-ENV DEBIAN_FRONTEND=noninteractive
 ENV TZ=Asia/Tokyo
-
-# UTF-8ロケール設定（日本語git diff文字化け対策）
 ENV LANG=C.UTF-8
 ENV LC_ALL=C.UTF-8
-
-# 必要なパッケージのインストール
 RUN apt-get update && apt-get install -y \
     make \
     vim \
-    nano \
     jq \
     fzf \
-    zsh \
     ca-certificates \
-    && curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg \
+    sudo \
+    gnupg \
+    wget \
+    python3 \
+    python3-pip \
+    && curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | gpg --dearmor -o /usr/share/keyrings/githubcli-archive-keyring.gpg \
     && chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg \
     && echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | tee /etc/apt/sources.list.d/github-cli.list > /dev/null \
     && apt-get update \
     && apt-get install -y gh \
-    && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/* \
+    && ln -s /usr/bin/python3 /usr/bin/python
 
-# Claude Code CLIをインストール
+RUN wget -q https://github.com/GoogleContainerTools/container-structure-test/releases/download/v1.19.1/container-structure-test-linux-arm64 -O /usr/local/bin/container-structure-test \
+    && chmod +x /usr/local/bin/container-structure-test
+
+RUN usermod -l claude -d /home/claude node && \
+    groupmod -n claude node && \
+    mkdir -p /home/claude && \
+    chown claude:claude /home/claude && \
+    usermod -aG sudo claude && \
+    echo "claude ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+
 RUN npm install -g @anthropic-ai/claude-code
 
-# corepackを有効化してpnpmを準備
 RUN corepack enable && \
     corepack prepare pnpm@10.12.4 --activate
 
-# 作業ディレクトリ設定
 WORKDIR /workspace/webapp-next-supabase-dev
 
-# GitHubトークン（build arg経由、必須）
-ARG GITHUB_TOKEN
-RUN test -n "$GITHUB_TOKEN" || (echo "ERROR: GITHUB_TOKEN is required" && exit 1)
-
-# Git設定（build arg経由、オプション）
 ARG GIT_USER_NAME
 ARG GIT_USER_EMAIL
+RUN --mount=type=secret,id=github_token test -f /run/secrets/github_token || (echo "ERROR: GITHUB_TOKEN secret is required" && exit 1)
+RUN --mount=type=secret,id=github_token \
+    GITHUB_TOKEN=$(cat /run/secrets/github_token) && \
+    git clone https://token:$GITHUB_TOKEN@github.com/pep299/webapp-next-supabase-dev.git . && \
+    git config credential.helper store && \
+    echo "https://token:$GITHUB_TOKEN@github.com" > /tmp/.git-credentials && \
+    chown claude:claude /tmp/.git-credentials
+
+RUN chown -R claude:claude /workspace/webapp-next-supabase-dev
+
+USER claude
+
 RUN if [ -n "$GIT_USER_NAME" ]; then git config --global user.name "$GIT_USER_NAME"; fi
 RUN if [ -n "$GIT_USER_EMAIL" ]; then git config --global user.email "$GIT_USER_EMAIL"; fi
+RUN git config --global credential.helper "store --file=/tmp/.git-credentials"
 
-# GitHubからリポジトリをクローン
-RUN git clone https://token:$GITHUB_TOKEN@github.com/pep299/webapp-next-supabase-dev.git .
+RUN mkdir -p /home/claude/.claude /home/claude/.config/claude-code
+COPY --chown=claude:claude ai-agent/claude-code/config/.claude/settings.json /home/claude/.claude/settings.json
 
-# 依存関係のインストール（frozen-lockfile使用）
-RUN pnpm install --frozen-lockfile
+RUN claude mcp add -s user context7 npx @upstash/context7-mcp@latest
+RUN claude mcp add -s user playwright npx @playwright/mcp@latest
 
-# .envファイルをホストからコピー（動的設定対応）
-COPY .env.local .env
+COPY --chown=claude:claude ai-agent/claude-code/config/.config/claude-code/ /home/claude/.config/claude-code/ 
 
-# ポート公開（動的検出されたポート用）
-# Next.js apps: 3000, 3001
+RUN pnpm install --frozen-lockfile --fetch-timeout=300000 || pnpm install --frozen-lockfile --fetch-timeout=300000
+
+COPY --chown=claude:claude .env.local .env
 EXPOSE 3000 3001
-# Supabase services: 54320-54329
 EXPOSE 54320 54321 54322 54323 54324 54325 54326 54327 54328 54329
-
-# 最終作業ディレクトリ（開発開始位置）
 WORKDIR /workspace/webapp-next-supabase-dev
-
-# デフォルトシェル（zshに統一）
-CMD ["/bin/zsh"]
+CMD ["/bin/bash"]
