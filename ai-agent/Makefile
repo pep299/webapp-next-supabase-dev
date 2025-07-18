@@ -2,7 +2,6 @@
 # 動的ポート検出とコンテナライフサイクル管理
 
 SHELL := /bin/bash
-export DOCKER_HOST := unix:///Users/$(USER)/.colima/default/docker.sock
 .PHONY: help build build-with-token run test stop clean-containers clean-images clean-cache clean-all prepare-config
 
 # デフォルトターゲット
