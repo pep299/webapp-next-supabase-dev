@@ -19,6 +19,7 @@ RUN apt-get update && apt-get install -y \
     wget \
     python3 \
     python3-pip \
+    ripgrep \
     && curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | gpg --dearmor -o /usr/share/keyrings/githubcli-archive-keyring.gpg \
     && chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg \
     && echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | tee /etc/apt/sources.list.d/github-cli.list > /dev/null \
@@ -66,7 +67,9 @@ RUN mkdir -p /home/claude/.claude /home/claude/.config/claude-code
 COPY --chown=claude:claude ai-agent/claude-code/config/.claude/settings.json /home/claude/.claude/settings.json
 
 RUN claude mcp add -s user context7 npx @upstash/context7-mcp@latest
-RUN claude mcp add -s user playwright npx @playwright/mcp@latest
+RUN npx playwright install webkit
+RUN npx playwright install-deps webkit
+RUN claude mcp add -s user playwright "npx @playwright/mcp@latest --browser webkit"
 
 COPY --chown=claude:claude ai-agent/claude-code/config/.config/claude-code/ /home/claude/.config/claude-code/ 
 

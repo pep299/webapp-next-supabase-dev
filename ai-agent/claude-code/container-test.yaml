@@ -33,6 +33,11 @@ commandTests:
     args: ['--version']
     expectedOutput: ['[0-9]+\.[0-9]+.*']
     
+  - name: 'ripgrep installed'
+    command: 'rg'
+    args: ['--version']
+    expectedOutput: ['ripgrep.*']
+
   # Claude Code CLIが使えるかテスト (using bash to avoid shell snapshot issues)
   - name: 'claude command available'
     command: 'bash'

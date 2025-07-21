@@ -53,13 +53,13 @@ prepare-config:
 		echo "📝 No hooks scripts found - using default empty configuration"; \
 	fi
 	@# Extract MCP servers configuration from ~/.claude.json or create default
-	@if [ -f ~/.claude.json ] && command -v jq >/dev/null 2>&1; then \
-		echo "✅ Extracting MCP servers from ~/.claude.json"; \
-		jq '{mcpServers: (.mcpServers // {})}' ~/.claude.json > claude-code/config/.mcp.json; \
-	else \
+	# @if [ -f ~/.claude.json ] && command -v jq >/dev/null 2>&1; then \
+	# 	echo "✅ Extracting MCP servers from ~/.claude.json"; \
+	# 	jq '{mcpServers: (.mcpServers // {})}' ~/.claude.json > claude-code/config/.mcp.json; \
+	# else \
 		echo "📝 Creating default .mcp.json with context7 and playwright"; \
-		echo '{"mcpServers": {"context7": {"type": "stdio", "command": "npx", "args": ["-y", "@upstash/context7-mcp@latest"], "env": {}}, "playwright": {"type": "stdio", "command": "npx", "args": ["-y", "@playwright/mcp@latest"], "env": {}}}}' > claude-code/config/.mcp.json; \
-	fi
+		echo '{"mcpServers": {"context7": {"type": "stdio", "command": "npx", "args": ["-y", "@upstash/context7-mcp@latest"], "env": {}}, "playwright": {"type": "stdio", "command": "npx", "args": ["-y", "@playwright/mcp@latest", "--browser", "webkit"], "env": {}}}}' > claude-code/config/.mcp.json; \
+	# fi
 	@echo "✅ Configuration preparation completed"
 
 # イメージビルド（セキュアトークン指定）
